@@ -16,17 +16,10 @@ END
 
 ")
 
-(defn is-state-line?
-  [line]
-  (if (re-find (re-matcher #"\s->\s" line))
-    false
-    true))
-
 (defn is-transition-line?
   [line]
-  (if (re-find (re-matcher #"\s->\s" line))
-    true
-    false))
+  (let [[trans-tag char ] (str/split line #"\s+")]
+    (and (is-transition-tag? )))
 
 (defn is-state-tag?
   [tag]
@@ -66,12 +59,18 @@ END
     (println "UPDATED STATE = " result)
     result))
 
+(defn valid-transition?
+  [[trans-tag char arrow state :as trans]]
+  (and (= (str/lower-case trans-tag) "t") (= "->" arrow)))
+
 (defn add-transition
   "adds the transition encoded by trans-line into curr-state
    curr-state has format: {:result :accept/:reject :transitions {}}"
   [curr-state trans-line]
-  (let [[char state] (map str/trim (str/split trans-line #"->"))]
-    (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)}))))
+  (let [[trans-tag char arrow state :as trans] (str/split trans-line #"\s+")]
+    (if (valid-transition? trans)
+      (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)}))
+      nil)))
 
 (defn add-new-state
   [states curr-state-name curr-state]
@@ -83,13 +82,14 @@ END
 
 (defn is-end-line?
   [line]
-  (= "end" (str/lower-case (str/trim line))))
+  (= "end" (str/lower-case line)))
 
 (defn update-args
   "returns updated [states curr-state-name curr-state]"
   [states curr-state-name curr-state line]
   (let [line (str/trim line)
-        new-state-name (get-state-name line)]
+        new-state-name (get-state-name line)
+        post-trans-add-state (add-transition curr-state line)]
     (cond
      new-state-name
      (let [updated-state (update-state line)]
@@ -102,9 +102,9 @@ END
            (println "updated state = " updated-state)
            (println "to return = " [states new-state-name updated-state])
            [states new-state-name updated-state])))
-     (is-transition-line? line)
-     [states curr-state-name (add-transition curr-state line)]
-     :else nil)))
+     post-trans-add-state
+     [states curr-state-name post-trans-add-state]
+     :else nil))
 
 (defn parse-dfa
   [state-transitions]
