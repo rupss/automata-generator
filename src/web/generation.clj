@@ -10,16 +10,11 @@ t 0 -> S1
 t 1 -> S0
 s S1
 t 0 -> S4
- 1 -> s5
+t 1 -> s5
 
 
 
 ")
-
-(defn is-transition-line?
-  [line]
-  (let [[trans-tag char] (str/split line #"\s+")]
-    (and (is-transition-tag? )))
 
 (defn is-state-tag?
   [tag]
@@ -52,11 +47,8 @@ t 0 -> S4
 (defn update-state
   "adds info about whether the state is an accepting/rejecting state and start state"
   [state-line]
-  (println "\n...Updating state....")
-  (println "curr line = " state-line)
   (let [[state-tag state-name & options] (str/split state-line #"\s+")
         result (merge (get-empty-state) (result-info options) (start-info options))]
-    (println "UPDATED STATE = " result)
     result))
 
 (defn valid-transition?
@@ -98,9 +90,6 @@ t 0 -> S4
           new-state-name
           updated-state]
          (do
-           (println "\n...Update-args...\n")
-           (println "updated state = " updated-state)
-           (println "to return = " [states new-state-name updated-state])
            [states new-state-name updated-state])))
      post-trans-add-state
      [states curr-state-name post-trans-add-state]
@@ -113,19 +102,12 @@ t 0 -> S4
            states {}
            curr-state-name nil
            curr-state (get-empty-state)]
-      (println "-----")
-      (println "I = " i)
-      (println "states = " states)
-      (println "curr state name = " curr-state-name)
-      (println "CURR_STATE = " curr-state)
       (if (== i (count lines))
         states
         (do
-          (println "LINE = " (nth lines i))
           (let [line (str/trim (nth lines i))
                 [new-states new-curr-state-name new-curr-state :as result]
                 (update-args states curr-state-name curr-state line)]
-            (println "update args result = " result)
             (if (and (nil? new-states) (nil? new-curr-state-name) (nil? new-curr-state))
               nil
               (do
