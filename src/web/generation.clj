@@ -5,20 +5,20 @@
             [clojure.string :as str]))
 
 (def test-input
-  "S0 START A
-0 -> S1
-1 -> S0
-S1
-0 -> S4
-1 -> s5
-END
+  "s S0 START A
+t 0 -> S1
+t 1 -> S0
+s S1
+t 0 -> S4
+ 1 -> s5
+
 
 
 ")
 
 (defn is-transition-line?
   [line]
-  (let [[trans-tag char ] (str/split line #"\s+")]
+  (let [[trans-tag char] (str/split line #"\s+")]
     (and (is-transition-tag? )))
 
 (defn is-state-tag?
@@ -91,7 +91,7 @@ END
         new-state-name (get-state-name line)
         post-trans-add-state (add-transition curr-state line)]
     (cond
-     new-state-name
+     (or new-state-name (is-end-line? line))
      (let [updated-state (update-state line)]
        (if (or (not (nil? curr-state-name)) (is-end-line? line))
          [(add-new-state states curr-state-name curr-state)
@@ -104,11 +104,11 @@ END
            [states new-state-name updated-state])))
      post-trans-add-state
      [states curr-state-name post-trans-add-state]
-     :else nil))
+     :else nil)))
 
 (defn parse-dfa
   [state-transitions]
-  (let [lines (str/split state-transitions #"[\n]")]
+  (let [lines (conj (str/split state-transitions #"[\n]") "end")]
     (loop [i 0
            states {}
            curr-state-name nil
@@ -123,13 +123,12 @@ END
         (do
           (println "LINE = " (nth lines i))
           (let [line (str/trim (nth lines i))
-                [new-states new-curr-state-name new-curr-state]
+                [new-states new-curr-state-name new-curr-state :as result]
                 (update-args states curr-state-name curr-state line)]
+            (println "update args result = " result)
             (if (and (nil? new-states) (nil? new-curr-state-name) (nil? new-curr-state))
               nil
               (do
-                (println "*****")
-                (println "new curr state = " new-curr-state)
                 (recur (inc i) new-states new-curr-state-name new-curr-state)))))))))
 
 (defn test
