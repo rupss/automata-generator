@@ -1,20 +1,20 @@
 (ns web.generation
-  (:require [hiccup.core :refer (html)]
-            [hiccup.form :as f]
-            [clojure.core.logic :as logic]
-            [clojure.string :as str]))
+  (:require [clojure.core.logic :as logic]
+            [clojure.string :as str]
+            [web.macros :as mac]))
 
 (def test-input
   "s S0 START A
 t 0 -> S1
 t 1 -> S0
 s S1
-t 0 -> S4
-t 1 -> s5
-
+t 0 -> S0
+t 1 -> S1
 
 
 ")
+
+;;;;;; State-transition parsing code
 
 (defn is-state-tag?
   [tag]
@@ -44,6 +44,10 @@ t 1 -> s5
     {:start true}
     nil))
 
+(defn get-empty-state
+  []
+  {:result nil :transitions {}})
+
 (defn update-state
   "adds info about whether the state is an accepting/rejecting state and start state"
   [state-line]
@@ -67,10 +71,6 @@ t 1 -> s5
 (defn add-new-state
   [states curr-state-name curr-state]
   (merge states {(symbol curr-state-name) curr-state}))
-
-(defn get-empty-state
-  []
-  {:result nil :transitions {}})
 
 (defn is-end-line?
   [line]
@@ -113,10 +113,17 @@ t 1 -> s5
               (do
                 (recur (inc i) new-states new-curr-state-name new-curr-state)))))))))
 
-(defn test
-  []
-  (logic/run 10 [q] (logic/== q 2)))
+;;;;;;;;;;;;;;;;;;
+
+(defn valid?
+  [dfa]
+  (if (nil? dfa)
+    false
+    true))
 
 (defn evaluate-dfa
   [states input]
-  states)
+  (let [dfa (parse-dfa states)]
+    (if (valid? dfa)
+      ((mac/build-automata-fn dfa) input)
+      nil)))

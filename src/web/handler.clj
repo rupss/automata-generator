@@ -3,7 +3,6 @@
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
             [web.views :as views]
-            [web.generation :as gen]
             ))
 
 (defroutes app-routes

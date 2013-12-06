@@ -36,4 +36,5 @@
                      (f/label "input" "Input")
                      (f/text-area "input")
                      (f/submit-button "Evaluate"))
-          [:div states]))
+          [:div (str (gen/evaluate-dfa states input))]
+          [:div "works"]))
