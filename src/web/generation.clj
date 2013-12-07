@@ -4,10 +4,10 @@
             [web.macros :as mac]))
 
 (def test-input
-  "s S0 START A
+  "s S0 START
 t 0 -> S1
 t 1 -> S0
-s S1
+s S1 A
 t 0 -> S0
 t 1 -> S1
 
@@ -121,9 +121,18 @@ t 1 -> S1
     false
     true))
 
+(defn separate-into-vec
+  [input]
+  (if (empty? input)
+    []
+    (into [] (map #(str %) (seq (str/split input #"\s+"))))))
+
 (defn evaluate-dfa
   [states input]
-  (let [dfa (parse-dfa states)]
+  (let [dfa (parse-dfa states)
+        correct-input (separate-into-vec input)]
+    (println dfa)
+    (println "correct input = " correct-input)
     (if (valid? dfa)
-      ((mac/build-automata-fn dfa) input)
+      ((mac/build-automata-fn dfa) correct-input)
       nil)))

@@ -21,8 +21,14 @@
                      [:br]
                      (f/label "input" "Input")
                      (f/text-area "input")
-                     (f/submit-button "Evaluate"))
-          [:p (gen/test)]))
+                     (f/submit-button "Evaluate"))))
+
+(defn get-evaluated-value
+  [states input]
+  (let [result (gen/evaluate-dfa states input)]
+    (if (nil? result)
+      [:div "ERROR MESSAGE"]
+      [:div result])))
 
 (defn results-page
   [states input]
@@ -36,5 +42,5 @@
                      (f/label "input" "Input")
                      (f/text-area "input")
                      (f/submit-button "Evaluate"))
-          [:div (str (gen/evaluate-dfa states input))]
-          [:div "works"]))
+          (get-evaluated-value states input)
+          [:div "works yay!"]))
