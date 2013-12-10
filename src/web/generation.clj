@@ -1,7 +1,8 @@
 (ns web.generation
   (:require [clojure.core.logic :as logic]
             [clojure.string :as str]
-            [web.macros :as mac]))
+            [web.macros :as mac]
+            [cheshire.core :refer :all]))
 
 (def test-input
   "s S0 START
@@ -127,12 +128,17 @@ t 1 -> S1
     []
     (into [] (map #(str %) (seq (str/split input #"\s+"))))))
 
+(defn write-json-file
+  [dfa]
+  (spit "./dfa.json" (generate-string dfa)))
+
 (defn evaluate-dfa
   [states input]
   (let [dfa (parse-dfa states)
         correct-input (separate-into-vec input)]
     (println dfa)
-    (println "correct input = " correct-input)
     (if (valid? dfa)
-      ((mac/build-automata-fn dfa) correct-input)
+      (do
+        (write-json-file dfa)
+        ((mac/build-automata-fn dfa) correct-input))
       nil)))
