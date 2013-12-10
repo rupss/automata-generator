@@ -32,7 +32,7 @@
        "By Rupa Shankar"]]
      [:li
       [:a
-       {:href "http://www.github.com/rupss"}
+       {:href "http://www.github.com/rupss/automata-generator"}
        [:img {:src "/images/GitHub-Mark-32px.png"}]]]
      [:li {:style "width:120px"}]]]])
 
@@ -49,7 +49,7 @@
      [:a {:href "yolo" :class "banner"} [:img {:alt "Fork me on GitHub"
                                                :src "/images/fork.png"
                                                :style
-                                               "position: absolute; top: 20; right: 0; border: 0; z-index:100;"}]]
+                                               "position: absolute; right: 0; border: 0; z-index:100;"}]]
      (setup-navbar)
      content
      [:script {:src "//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"}]
@@ -79,18 +79,6 @@
 (defn main-page
   []
   (layout "Home Page" (input-form nil)))
-
-;; (defn main-page
-;;   []
-;;   (layout "Home page"
-;;           [:div "Welcome to the automata generator"]
-;;           (f/form-to [:post "/"]
-;;                      (f/label "states" "DFA state transitions")
-;;                      (f/text-area {:rows 3} "states")
-;;                      [:br]
-;;                      (f/label "input" "Input")
-;;                      (f/text-area "input")
-;;                      (f/submit-button "Evaluate"))))
 
 (defn get-evaluated-value
   [states input]
