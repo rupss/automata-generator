@@ -1,3 +1,11 @@
 textarea {
     width: 100%;
 }
+
+.accept {
+    background-color: green;
+}
+
+.reject {
+    background-color: red;
+}

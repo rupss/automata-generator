@@ -5,13 +5,6 @@
 
 (defn setup-navbar
   []
-  ;; [:a.banner
-  ;;   {:href "https://github.com/rupss/automata-generator"}
-  ;;   [:img
-  ;;    {:alt "Fork me on GitHub",
-  ;;     :src "/images/fork.png",
-  ;;     :style
-  ;;     "position: absolute; top: 20; right: 0; border: 0; z-index:100;"}]]
   [:nav.navbar.navbar-default
    {:role "navigation"}
    [:div.navbar-header
@@ -32,21 +25,21 @@
        "By Rupa Shankar"]]
      [:li
       [:a
-       {:href "http://www.github.com/rupss/automata-generator"}
+       {:href "http://www.github.com/rupss/"}
        [:img {:src "/images/GitHub-Mark-32px.png"}]]]
      [:li {:style "width:120px"}]]]])
 
 (defn layout
   [title & content]
   (str
+   "<!DOCTYPE html>"
    (html
     [:head
      [:title title]
      [:link {:href "css/bootstrap.min.css", :rel "stylesheet"}]
-     [:link {:href "css/dfa.css", :rel "stylesheet"}]])
-   (html
+     [:link {:href "css/dfa.css", :rel "stylesheet"}]]
     [:body
-     [:a {:href "yolo" :class "banner"} [:img {:alt "Fork me on GitHub"
+     [:a {:href "http://www.github.com/rupss/automata-generator" :class "banner"} [:img {:alt "Fork me on GitHub"
                                                :src "/images/fork.png"
                                                :style
                                                "position: absolute; right: 0; border: 0; z-index:100;"}]]
@@ -80,12 +73,22 @@
   []
   (layout "Home Page" (input-form nil)))
 
+(defn get-accept
+  []
+  [:div.accept "ACCEPT"])
+
+(defn get-reject
+  []
+  [:div.reject "REJECT"])
+
 (defn get-evaluated-value
   [states input]
   (let [result (gen/evaluate-dfa states input)]
-    (if (nil? result)
-      [:div "ERROR MESSAGE"]
-      [:div result])))
+    (cond
+     (nil? result) [:div "ERROR MESSAGE"]
+     (= :accept (first result)) (get-accept)
+     (= :reject (first result)) (get-reject)
+     :else [:div "problem"])))
 
 (defn results-page
   [states input]
