@@ -1,0 +1,78 @@
+<!doctype html>
+<html>
+  <head>
+    <title>DFA Solver</title>
+    <script src="http://visjs.org/vis.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Bootstrap -->
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/dfa.css" rel="stylesheet">
+  </head>
+  <body>
+    <a href="https://github.com/rupss/automata-generator"
+       class="banner"><img style="position: absolute; top: 20; right: 0;
+                                  border: 0; z-index:100;"
+                           src="images/fork.png"
+                           alt="Fork me on GitHub"></a>
+    <nav class="navbar navbar-default" role="navigation">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">Automata Generator</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="http://www.rupsshankar.tumblr.com">By Rupa Shankar</a></li>
+          <li><a href="http://www.github.com/rupss"><img src="images/GitHub-Mark-32px.png"/></a></li>
+          <li style="width:120px"/>
+        </ul>
+      </div>
+    </nav>
+
+    <div class="container">
+      <div class="col-xs-7">
+        <div class="row">
+          <form action="/" method="post">
+            <div class="container">
+              <div class="row">
+                <div class="col-xs-2">
+                  <label for="states">DFA state transitions</label>
+                </div>
+                <div class="col-xs-4">
+                  <textarea id="states" name="states" rows="3"></textarea>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div class="container">
+              <div class="row">
+                <div class="col-xs-2">
+                  <label for="input">Input</label>
+                </div>
+                <div class="col-xs-4">
+                  <textarea id="input" name="input"></textarea>
+                </div>
+              </div>
+            </div>
+            <button type="submit" class="btn btn-default">Submit</button>
+        </div>
+        </form>
+      </div>
+      <div class="col-xs-5">{{result|safe}}</div>
+      </div>
+    </div>
+</div>
+<br>
+<div id="mygraph"></div>
+{{script|safe}}
+
+
+<script src="https://code.jquery.com/jquery.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>

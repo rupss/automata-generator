@@ -1,0 +1,19 @@
+ <script type="text/javascript">
+    {{data|safe}}
+    // create a graph
+    var container = document.getElementById('mygraph');
+    var data= {
+        nodes: nodes,
+        edges: edges,
+    };
+    var options = {
+       // width: "70%",
+       // height: '400px', 
+        edges: {
+            style: "arrow"
+        }
+    };
+    var graph = new vis.Graph(container, data, options);
+
+
+    </script>

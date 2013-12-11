@@ -1,98 +1,83 @@
 (ns web.views
-  (:require [hiccup.core :refer (html)]
-            [hiccup.form :as f]
-            [web.generation :as gen]))
+  (:require [web.generation :as gen]
+            [selmer.parser :refer :all]))
 
-(defn setup-navbar
-  []
-  [:nav.navbar.navbar-default
-   {:role "navigation"}
-   [:div.navbar-header
-    [:button.navbar-toggle
-     {:data-target "#bs-example-navbar-collapse-1",
-      :data-toggle "collapse",
-      :type "button"}
-     [:span.sr-only "Toggle navigation"]
-     [:span.icon-bar]
-     [:span.icon-bar]
-     [:span.icon-bar]]
-    [:a.navbar-brand {:href "#"} "Automata Generator"]]
-   [:div#bs-example-navbar-collapse-1.collapse.navbar-collapse
-    [:ul.nav.navbar-nav.navbar-right
-     [:li
-      [:a
-       {:href "http://www.rupsshankar.tumblr.com"}
-       "By Rupa Shankar"]]
-     [:li
-      [:a
-       {:href "http://www.github.com/rupss/"}
-       [:img {:src "/images/GitHub-Mark-32px.png"}]]]
-     [:li {:style "width:120px"}]]]])
+(def home-page "./src/web/views/home.html")
+(def accept-page "./src/web/views/accept.html")
+(def reject-page "./src/web/views/reject.html")
+(def draw-script "./src/web/views/draw-js.html")
+(def data "./src/web/views/data.js")
 
-(defn layout
-  [title & content]
-  (str
-   "<!DOCTYPE html>"
-   (html
-    [:head
-     [:title title]
-     [:link {:href "css/bootstrap.min.css", :rel "stylesheet"}]
-     [:link {:href "css/dfa.css", :rel "stylesheet"}]]
-    [:body
-     [:a {:href "http://www.github.com/rupss/automata-generator" :class "banner"} [:img {:alt "Fork me on GitHub"
-                                               :src "/images/fork.png"
-                                               :style
-                                               "position: absolute; right: 0; border: 0; z-index:100;"}]]
-     (setup-navbar)
-     content
-     [:script {:src "//ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"}]
-     [:script {:src "js/bootstrap.min.js"}]])))
+(def node-name-to-id (atom {}))
 
-(defn input-form
-  [result]
-  [:div.container
-   [:div.col-xs-9
-    [:div.row
-     [:form
-      {:method "post", :action "/"}
-      [:div.container
-       [:div.row
-        [:div.col-xs-2
-         [:label {:for "states"} "DFA state transitions"]]
-        [:div.col-xs-4
-         [:textarea#states {:rows "3", :name "states"}]]]]
-      [:br]
-      [:div.container
-       [:div.row
-        [:div.col-xs-2 [:label {:for "input"} "Input"]]
-        [:div.col-xs-4 [:textarea#input {:name "input"}]]]]
-      [:button.btn.btn-default {:type "submit"} "Submit"]]]]
-   [:div#result.col-xs-3 result]])
+(def test-dfa {'S0 {:start true :result :accept :transitions {0 'S0 1 'S1}}
+               'S1 {:result :reject :transitions {0 'S0 1 'S1}}})
 
 (defn main-page
   []
-  (layout "Home Page" (input-form nil)))
+  (render (slurp home-page) {:result nil :script nil}))
 
-(defn get-accept
-  []
-  [:div.accept "ACCEPT"])
+(defn make-node-line
+  [node id]
+  (swap! node-name-to-id assoc node id)
+  (str "{id:" id ", label: '" node "'}"))
 
-(defn get-reject
-  []
-  [:div.reject "REJECT"])
+(defn construct-nodes
+  [dfa]
+  (let [nodes (keys dfa)
+        ids (range (count nodes))
+        node-lines (map make-node-line nodes ids)]
+    (apply str (interpose "," node-lines))))
 
-(defn get-evaluated-value
-  [states input]
-  (let [result (gen/evaluate-dfa states input)]
-    (cond
-     (nil? result) [:div "ERROR MESSAGE"]
-     (= :accept (first result)) (get-accept)
-     (= :reject (first result)) (get-reject)
-     :else [:div "problem"])))
+(defn construct-nodes-arr
+  [dfa]
+  (str "var nodes = [" (construct-nodes dfa) "];"))
+
+(defn get-node-id
+  [name]
+  (@node-name-to-id name))
+
+(defn make-edge-line
+  [source target label]
+  (str "{from: " (get-node-id source) ", to: " (get-node-id target) ", label: '" label "'}"))
+
+(defn add-edges
+  [edge-list [source-state-name state]]
+  (let [transitions (:transitions state)
+        edge-lines (map ( fn [[label target]] (make-edge-line source-state-name target label)) transitions)]
+    (concat edge-list edge-lines)))
+
+(defn get-edges
+  [dfa]
+  (let [edge-line-list (reduce add-edges [] dfa)]
+    (apply str (interpose "," edge-line-list))))
+
+(defn construct-edges-arr
+  [dfa]
+  (str "var edges = [" (get-edges dfa) "];"))
+
+(defn construct-data
+  [dfa]
+  (str (construct-nodes-arr dfa) "\n" (construct-edges-arr dfa)))
+
+(defn construct-js
+  [dfa result]
+  (if (nil? result)
+    nil
+    (render (slurp draw-script) {:data (construct-data dfa)})))
+
+(defn get-result-div
+  [result]
+  (cond
+   (nil? result) "ERROR"
+   (= :accept result) (slurp accept-page)
+   (= :reject result) (slurp reject-page)))
 
 (defn results-page
   [states input]
-  (layout "Result"
-          [:script {:src "js/draw-dfa.js"}]
-          (input-form (get-evaluated-value states input))
-          [:div {:id "viz"}]))
+  (let [[dfa result] (gen/evaluate-dfa states input)]
+    (println "In results page")
+    (println "dfa = " dfa)
+    (println "result = " result)
+    (render (slurp home-page) {:result (get-result-div (first result))
+                               :script (construct-js dfa result)})))

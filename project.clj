@@ -5,7 +5,8 @@
                  [compojure "1.1.6"]
                  [hiccup "1.0.2"]
                  [org.clojure/core.logic "0.8.5"]
-                 [cheshire "5.2.0"]]
+                 [cheshire "5.2.0"]
+                 [selmer "0.5.4"]]
   :plugins [[lein-ring "0.8.8"]]
   :ring {:handler web.handler/app}
   :profiles

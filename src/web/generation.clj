@@ -136,9 +136,10 @@ t 1 -> S1
   [states input]
   (let [dfa (parse-dfa states)
         correct-input (separate-into-vec input)]
-    (println dfa)
     (if (valid? dfa)
-      (do
-        (write-json-file dfa)
-        ((mac/build-automata-fn dfa) correct-input))
+      (let [result ((mac/build-automata-fn dfa) correct-input)]
+        (println "in eval dfa")
+        (println "dfa = " dfa)
+        (println "result = " result)
+        (vector dfa result)) 
       nil)))

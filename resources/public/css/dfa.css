@@ -3,9 +3,17 @@ textarea {
 }
 
 .accept {
-    background-color: green;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .reject {
-    background-color: red;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#mygraph {
+    width: 70%;
+    margin-left: auto;
+    margin-right: auto
 }
