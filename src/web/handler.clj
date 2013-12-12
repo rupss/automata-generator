@@ -2,8 +2,7 @@
   (:use compojure.core)
   (:require [compojure.handler :as handler]
             [compojure.route :as route]
-            [web.views :as views]
-            ))
+            [web.views :as views]))
 
 (defroutes app-routes
   (GET "/" [] (views/main-page))

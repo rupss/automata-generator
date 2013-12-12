@@ -24,7 +24,6 @@
         </button>
         <a class="navbar-brand" href="/">Automata Generator</a>
       </div>
-
       <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
         <ul class="nav navbar-nav navbar-right">
           <li><a href="http://www.rupsshankar.tumblr.com">By Rupa Shankar</a></li>
@@ -33,7 +32,14 @@
         </ul>
       </div>
     </nav>
-
+    <div class="container">
+      <div class="col-md-12">
+        <p>
+          Specify the states/transitions of a DFA and an input string to get a visualization of the DFA and the result! 
+        </p>
+      </div>
+    </div>
+    <br>
     <div class="container">
       <div class="col-md-7">
         <div class="row">
@@ -52,24 +58,45 @@
             <div class="container">
               <div class="row">
                 <div class="col-md-2">
-                  <label for="input">Input</label>
+                  <label for="input">
+                    Input
+                    <div id="input-instructions">
+                      Space separated<br>e.g 0 1 1 0
+                    </div>
+                  </label>
                 </div>
                 <div class="col-md-4">
                   <textarea id="input" name="input"></textarea>
                 </div>
               </div>
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-2"></div>
+                  <div class="col-md-4">
+                    <br>
+                    <button type="submit" class="btn btn-default" id="submit">Submit</button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <button type="submit" class="btn btn-default">Submit</button>
         </div>
         </form>
       </div>
-      <div class="col-md-5">{{result|safe}}</div>
-      </div>
+      <div class="col-md-5">INSTRUCTIONS</div>
     </div>
 </div>
+</div>
 <br>
-<div id="mygraph"></div>
-{{script|safe}}
+
+<div class="container">
+  <div class="col-md-3">
+    {{result|safe}}
+  </div>
+  <div class="col-md-9">
+    <div id="mygraph"></div>
+    {{script|safe}}
+  </div>
+</div>
 
 
 <script src="https://code.jquery.com/jquery.js"></script>
