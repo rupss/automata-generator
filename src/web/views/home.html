@@ -33,61 +33,97 @@
       </div>
     </nav>
     <div class="container">
-      <div class="col-md-12">
+      <div class="col-md-7">
         <p>
           Specify the states/transitions of a DFA and an input string to get a visualization of the DFA and the result! 
         </p>
+        <p>
+          Each header and transition should be on its own line.
+        </p>
       </div>
-    </div>
-    <br>
-    <div class="container">
-      <div class="col-md-7">
-        <div class="row">
-          <form action="/" method="post">
-            <div class="container">
-              <div class="row">
-                <div class="col-md-2">
-                  <label for="states">DFA state transitions</label>
-                </div>
-                <div class="col-md-4">
-                  <textarea id="states" name="states" rows="3"></textarea>
-                </div>
-              </div>
-            </div>
+      <div class="col-md-5">
+        <div class="title">Example</div>
+        <div class="container">
+          <div class="col-md-2">
+            <div class="example-header">DFA states</div>
+            <pre><code class="example">
+                s S0 start A <br>
+                t 0 -> S0 <br>
+                t 1 -> S1 <br>
+                s S1 <br>
+                t 0 -> S1 <br>
+                t 1 -> S0 <br>
+            </code></pre>
+          </div>
+          <div class="col-md-2">
+           <div class="example-header"> Input</div>
+            <pre><code class="example">0 1 1</code></pre>
+          </div>
+        </div>
+      </div>
+      <br>
+      <div class="container">
+        <div class="col-md-7">
+          <div class="row">
             <br>
-            <div class="container">
-              <div class="row">
-                <div class="col-md-2">
-                  <label for="input">
-                    Input
-                    <div id="input-instructions">
-                      Space separated<br>e.g 0 1 1 0
-                    </div>
-                  </label>
-                </div>
-                <div class="col-md-4">
-                  <textarea id="input" name="input"></textarea>
-                </div>
-              </div>
+            <form action="/" method="post">
               <div class="container">
                 <div class="row">
-                  <div class="col-md-2"></div>
+                  <div class="col-md-2">
+                    <label for="states">DFA states</label>
+                  </div>
                   <div class="col-md-4">
-                    <br>
-                    <button type="submit" class="btn btn-default" id="submit">Submit</button>
+                    <textarea id="states" name="states" rows="3"></textarea>
                   </div>
                 </div>
               </div>
-            </div>
+              <br>
+              <div class="container">
+                <div class="row">
+                  <div class="col-md-2">
+                    <label for="input">
+                      Input
+                      <div class="input-instructions">
+                        Space separated<br>e.g 0 1 1 0
+                      </div>
+                    </label>
+                  </div>
+                  <div class="col-md-4">
+                    <textarea id="input" name="input"></textarea>
+                  </div>
+                </div>
+                <div class="container">
+                  <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-4">
+                      <br>
+                      <button type="submit" class="btn btn-default" id="submit">Submit</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+          </div>
+          </form>
         </div>
-        </form>
+        <div class="col-md-5">
+          
+          <div class="title">DFA State Grammar</div>
+          <code>  &lt;DFA states&gt; --&gt; &lt;State&gt;+ </code><br>
+          <code>   &lt;State&gt;&nbsp; &nbsp; &nbsp;   --&gt; &lt;Header&gt; </code>
+          <code>        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;   &lt;Transition&gt;+  </code><br>
+          <code> &lt;Header&gt; &nbsp;&nbsp;&nbsp;&nbsp;--&gt; s STATE-NAME start? A?</code><br>
+          <div class="input-instructions">
+            start - denotes a start state <br>
+            A - denotes an accepting state (default is rejecting) <br>
+          </div>
+          <code> &lt;Transition&gt; --&gt; t SYMBOL -&gt; STATE-NAME</code>
+        </div>
       </div>
-      <div class="col-md-5">INSTRUCTIONS</div>
     </div>
 </div>
-</div>
 <br>
-
+<br><br>
 <div class="container">
   <div class="col-md-3">
     {{result|safe}}

@@ -18,7 +18,7 @@ textarea {
     margin-right: auto
 }
 
-#input-instructions {
+.input-instructions {
     font-size: 12px;
     font-weight: normal;
     font-style: italic;
@@ -27,4 +27,18 @@ textarea {
 #submit {
     position: absolute;
     left: 0px;
+}
+
+.title {
+    font-weight:bold;
+    text-align: center;
+}
+
+.example {
+    white-space: initial;
+}
+
+.example-header {
+    font-style: italic;
+    text-align: center; 
 }
