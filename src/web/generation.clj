@@ -56,18 +56,22 @@ t 1 -> S1
         result (merge (get-empty-state) (result-info options) (start-info options))]
     result))
 
-(defn valid-transition?
-  [[trans-tag char arrow state :as trans]]
-  (and (= (str/lower-case trans-tag) "t") (= "->" arrow)))
+(defn parse-transition
+  [trans-line]
+  (let [[unparsed state] (str/split (str/trim trans-line) #"\s*->\s*")
+        [trans-tag char] (str/split unparsed #"\s+")]
+    (if (= trans-tag "t")
+      [char state]
+      nil)))
 
 (defn add-transition
   "adds the transition encoded by trans-line into curr-state
    curr-state has format: {:result :accept/:reject :transitions {}}"
   [curr-state trans-line]
-  (let [[trans-tag char arrow state :as trans] (str/split (str/trim trans-line) #"\s+")]
-    (if (valid-transition? trans)
-      (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)}))
-      nil)))
+  (let [[char state :as result] (parse-transition trans-line)]
+    (if (nil? result)
+      nil
+      (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)})))))
 
 (defn add-new-state
   [states curr-state-name curr-state]
