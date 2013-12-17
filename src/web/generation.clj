@@ -64,7 +64,7 @@ t 1 -> S1
   "adds the transition encoded by trans-line into curr-state
    curr-state has format: {:result :accept/:reject :transitions {}}"
   [curr-state trans-line]
-  (let [[trans-tag char arrow state :as trans] (str/split trans-line #"\s+")]
+  (let [[trans-tag char arrow state :as trans] (str/split (str/trim trans-line) #"\s+")]
     (if (valid-transition? trans)
       (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)}))
       nil)))
@@ -128,18 +128,11 @@ t 1 -> S1
     []
     (into [] (map #(str %) (seq (str/split input #"\s+"))))))
 
-(defn write-json-file
-  [dfa]
-  (spit "./dfa.json" (generate-string dfa)))
-
 (defn evaluate-dfa
   [states input]
-  (let [dfa (parse-dfa states)
-        correct-input (separate-into-vec input)]
-    (if (valid? dfa)
-      (let [result ((mac/build-automata-fn dfa) correct-input)]
-        (println "in eval dfa")
-        (println "dfa = " dfa)
-        (println "result = " result)
-        (vector dfa result)) 
-      nil)))
+    (let [dfa (parse-dfa states)
+          correct-input (separate-into-vec input)]
+      (if (valid? dfa)
+        (let [result ((mac/build-automata-fn dfa) correct-input)]
+          (vector dfa result)) 
+        nil)))

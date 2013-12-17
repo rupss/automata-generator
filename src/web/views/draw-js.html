@@ -8,11 +8,12 @@
         edges: edges,
     };
     var options = {
-       // width: "%",
-       // height: '400px', 
         edges: {
             style: "arrow"
-        }
+        },
+        nodes: {
+            color: 'red'
+       }
     };
     var graph = new vis.Graph(container, data, options);
 

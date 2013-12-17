@@ -1,6 +1,7 @@
 (ns web.views
   (:require [web.generation :as gen]
-            [selmer.parser :refer :all]))
+            [selmer.parser :refer :all]
+            [web.macros :as m]))
 
 (def home-page "./src/web/views/home.html")
 (def accept-page "./src/web/views/accept.html")
@@ -17,17 +18,25 @@
   []
   (render (slurp home-page) {:result nil :script nil}))
 
+(defn add-node-color
+  [base-node-line dfa node]
+  (if (= :accept (:result (node dfa)))
+    (str base-node-line ", color: 'green'}")
+    (str base-node-line "}")))
+
 (defn make-node-line
-  [node id]
+  [node id dfa]
   (swap! node-name-to-id assoc node id)
-  (str "{id:" id ", label: '" node "'}"))
+  (let [base-node-line (str "{id:" id ", label: '" node "'")]
+    (add-node-color base-node-line dfa node)))
 
 (defn construct-nodes
   [dfa]
   (let [nodes (keys dfa)
         ids (range (count nodes))
-        node-lines (map make-node-line nodes ids)]
-    (apply str (interpose "," node-lines))))
+        node-lines (map (fn [node id] (make-node-line node id dfa)) nodes ids)
+        start-node-line '("{id:-1, label: 'START', color: '66CCFF'}")]
+    (apply str (interpose "," (concat start-node-line node-lines)))))
 
 (defn construct-nodes-arr
   [dfa]
@@ -44,13 +53,16 @@
 (defn add-edges
   [edge-list [source-state-name state]]
   (let [transitions (:transitions state)
-        edge-lines (map ( fn [[label target]] (make-edge-line source-state-name target label)) transitions)]
+        edge-lines (map (fn [[label target]] (make-edge-line source-state-name target label)) transitions)]
     (concat edge-list edge-lines)))
 
 (defn get-edges
   [dfa]
-  (let [edge-line-list (reduce add-edges [] dfa)]
-    (apply str (interpose "," edge-line-list))))
+  (let [edge-line-list (reduce add-edges [] dfa)
+        start-state-name (m/get-start-state dfa)
+        start-state-id (get-node-id start-state-name)
+        start-edge (str "{from: -1, to: " start-state-id "}")]
+    (apply str (interpose "," (concat (list start-edge) edge-line-list)))))
 
 (defn construct-edges-arr
   [dfa]
@@ -79,5 +91,7 @@
     (println "In results page")
     (println "dfa = " dfa)
     (println "result = " result)
+    (println "final result = " (get-result-div (first result)))
     (render (slurp home-page) {:result (get-result-div (first result))
-                               :script (construct-js dfa result)})))
+                               :script (construct-js dfa
+                          result)})))
