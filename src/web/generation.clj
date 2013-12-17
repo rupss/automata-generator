@@ -130,7 +130,7 @@ t 1 -> S1
   [input]
   (if (empty? input)
     []
-    (into [] (map #(str %) (seq (str/split input #"\s+"))))))
+    (into [] (map #(str %) (seq (str/split (str/trim input) #"\s+"))))))
 
 (defn evaluate-dfa
   [states input]
