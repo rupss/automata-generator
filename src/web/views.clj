@@ -6,6 +6,7 @@
 (def home-page "./src/web/views/home.html")
 (def accept-page "./src/web/views/accept.html")
 (def reject-page "./src/web/views/reject.html")
+(def error-page "./src/web/views/error.html")
 (def draw-script "./src/web/views/draw-js.html")
 (def data "./src/web/views/data.js")
 
@@ -81,9 +82,10 @@
 (defn get-result-div
   [result]
   (cond
-   (nil? result) "ERROR"
    (= :accept result) (slurp accept-page)
-   (= :reject result) (slurp reject-page)))
+   (= :reject result) (slurp reject-page)
+   (nil? result) "ERROR"
+   :else (render (slurp error-page) {:msg result})))
 
 (defn results-page
   [states input]
@@ -91,7 +93,7 @@
     (println "In results page")
     (println "dfa = " dfa)
     (println "result = " result)
-    (println "final result = " (get-result-div (first result)))
-    (render (slurp home-page) {:result (get-result-div (first result))
+    (println "final result = " (get-result-div result))
+    (render (slurp home-page) {:result (get-result-div result)
                                :script (construct-js dfa
                           result)})))

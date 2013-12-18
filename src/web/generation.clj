@@ -1,19 +1,16 @@
 (ns web.generation
   (:require [clojure.core.logic :as logic]
             [clojure.string :as str]
+            [clojure.set :as set]
             [web.macros :as mac]
             [cheshire.core :refer :all]))
 
 (def test-input
-  "s S0 START
-t 0 -> S1
-t 1 -> S0
-s S1 A
-t 0 -> S0
-t 1 -> S1
+  "s S0 start A
+t 0->S0
+t 1->S1")
 
-
-")
+(def states-tracker (atom #{}))
 
 ;;;;;; State-transition parsing code
 
@@ -71,7 +68,9 @@ t 1 -> S1
   (let [[char state :as result] (parse-transition trans-line)]
     (if (nil? result)
       nil
-      (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)})))))
+      (do
+        (swap! states-tracker conj (symbol state))
+        (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)}))))))
 
 (defn add-new-state
   [states curr-state-name curr-state]
@@ -120,11 +119,28 @@ t 1 -> S1
 
 ;;;;;;;;;;;;;;;;;;
 
-(defn valid?
+(defn make-error-msg
+  [missing-states]
+  (let [missing-states-strs (apply str (interpose ", " (map str missing-states)))]
+    (str "ERROR - undefined state&#47;s " missing-states-strs)))
+
+(defn has-missing-states
+  "Checks to see if there are any states referenced to by a transition that is not actually defined. "
   [dfa]
   (if (nil? dfa)
-    false
-    true))
+    nil
+    (if (= @states-tracker (set (keys dfa)))
+      nil
+      (let [not-defined (set/difference @states-tracker (set (keys dfa)))]
+        (make-error-msg not-defined)))))
+
+(defn valid?
+  [dfa]
+  (let [missing-states (has-missing-states dfa)]
+    (cond
+     (nil? dfa) nil
+     (not (nil? missing-states)) missing-states
+     :else true)))
 
 (defn separate-into-vec
   [input]
@@ -132,11 +148,13 @@ t 1 -> S1
     []
     (into [] (map #(str %) (seq (str/split (str/trim input) #"\s+"))))))
 
+
 (defn evaluate-dfa
   [states input]
     (let [dfa (parse-dfa states)
-          correct-input (separate-into-vec input)]
-      (if (valid? dfa)
+          correct-input (separate-into-vec input)
+          validity (valid? dfa)]
+      (if (true? validity)
         (let [result ((mac/build-automata-fn dfa) correct-input)]
-          (vector dfa result)) 
-        nil)))
+          (vector dfa (first result))) 
+        (vector nil validity))))
