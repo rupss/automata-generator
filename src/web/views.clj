@@ -12,7 +12,7 @@
 
 (def node-name-to-id (atom {}))
 
-(def test-dfa {'S0 {:start true :result :accept :transitions {0 'S0 1 'S1}}
+(def test-dfa {'S0 {:start true :result :accept :transitions {0 'S0 1 'S1 2 'S0}}
                'S1 {:result :reject :transitions {0 'S0 1 'S1}}})
 
 (defn main-page
@@ -47,23 +47,50 @@
   [name]
   (@node-name-to-id name))
 
-(defn make-edge-line
-  [source target label]
-  (str "{from: " (get-node-id source) ", to: " (get-node-id target) ", label: '" label "'}"))
+(defn make-label
+  [char-list]
+  (apply str (interpose ", " char-list)))
 
-(defn add-edges
-  [edge-list [source-state-name state]]
-  (let [transitions (:transitions state)
-        edge-lines (map (fn [[label target]] (make-edge-line source-state-name target label)) transitions)]
-    (concat edge-list edge-lines)))
+(defn make-edge-line
+  [source target char-list]
+  (str "{from: " (get-node-id source) ", to: " (get-node-id target) ", label: '" (make-label char-list) "'}"))
+
+;; ;;;;;;;
+;; (defn add-edges
+;;   [edge-list [source-state-name state]]
+;;   (let [transitions (:transitions state)
+;;         edge-lines (map (fn [[label target]] (make-edge-line source-state-name target label)) transitions)]
+;;     (concat edge-list edge-lines)))
+
+;; (defn get-edges
+;;   [dfa]
+;;   (let [edge-line-list (reduce add-edges [] dfa)
+;;         start-state-name (m/get-start-state dfa)
+;;         start-state-id (get-node-id start-state-name)
+;;         start-edge (str "{from: -1, to: " start-state-id "}")]
+;;     (apply str (interpose "," (concat (list start-edge) edge-line-list)))))
+;; ;;;;;;
+
+(defn make-edge-label-map
+  [label-map [char state]]
+  (let [curr-label (label-map state)]
+    (if (nil? curr-label)
+      (assoc label-map state [char])
+      (assoc label-map state (conj curr-label char)))))
+
+(defn get-state-edges
+  [[source-state-name state]]
+  (let [edge-label-map (reduce make-edge-label-map {} (:transitions state))]
+    (map (fn [[target-state char-list]] (make-edge-line source-state-name target-state char-list)) edge-label-map)))
+
+(defn flatten
+  [list-of-lists]
+  (reduce (fn [final curr-list] (reduce (fn [so-far val] (conj so-far val)) final curr-list)) [] list-of-lists))
 
 (defn get-edges
   [dfa]
-  (let [edge-line-list (reduce add-edges [] dfa)
-        start-state-name (m/get-start-state dfa)
-        start-state-id (get-node-id start-state-name)
-        start-edge (str "{from: -1, to: " start-state-id "}")]
-    (apply str (interpose "," (concat (list start-edge) edge-line-list)))))
+  (let [all-edges (flatten (map get-state-edges dfa))]
+    (apply str (interpose ", " all-edges))))
 
 (defn construct-edges-arr
   [dfa]
