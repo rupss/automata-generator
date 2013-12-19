@@ -46,3 +46,7 @@ textarea {
 #error {
     color: red;
 }
+
+#graphInstructions {
+    text-align: center;
+}

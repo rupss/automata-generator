@@ -51,8 +51,7 @@
             <div class="example-header">DFA states</div>
             <pre><code class="example">
                 s S0 start A <br>
-                t 0 -> S0 <br>
-                t 1 -> S1 <br>
+                t 0, 1 -> S0 <br>
                 s S1 <br>
                 t 0 -> S1 <br>
                 t 1 -> S0 <br>
@@ -120,7 +119,9 @@
             start - denotes a start state <br>
             A - denotes an accepting state (default is rejecting) <br>
           </div>
-          <code> &lt;Transition&gt; --&gt; t SYMBOL -&gt; STATE-NAME</code>
+          <code> &lt;Transition&gt; --&gt; t &lt;Symbols&gt; -&gt; STATE-NAME</code><br>
+          <code>&lt;Symbols&gt;&nbsp;&nbsp;&nbsp; --&gt; SYMBOL, SYMBOL, ...</code><br>
+          <div class="input-instructions">1+ comma separated symbols</div>
         </div>
       </div>
     </div>
@@ -132,7 +133,8 @@
     {{result|safe}}
   </div>
   <div class="col-md-9">
-    <div id="mygraph"></div>
+    <div class="row"><div id="graphInstructions"></div></div>
+    <div class="row"><div id="mygraph"></div></div>
     {{script|safe}}
   </div>
 </div>

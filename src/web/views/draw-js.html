@@ -1,5 +1,9 @@
  <script type="text/javascript">
     {{data|safe}}
+    //set instructions
+    var instructions = document.getElementById('graphInstructions');
+    instructions.innerHTML = "If some of the labels are obscured, click and drag to move the nodes and edges around.";
+
     // create a graph
     var container = document.getElementById('mygraph');
     container.style.border = "1px solid lightgray";
