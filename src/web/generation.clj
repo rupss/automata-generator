@@ -7,7 +7,7 @@
 
 (def test-input
   "s S0 start A
-t 0->S0
+t 0, 2->S0
 t 1->S1")
 
 (def states-tracker (atom #{}))
@@ -56,21 +56,25 @@ t 1->S1")
 (defn parse-transition
   [trans-line]
   (let [[unparsed state] (str/split (str/trim trans-line) #"\s*->\s*")
-        [trans-tag char] (str/split unparsed #"\s+")]
-    (if (= trans-tag "t")
-      [char state]
+        trans-tag (first unparsed)
+        chars (str/split (str/trim (subs unparsed 1)) #"\s*,\s*")]
+    (if (= trans-tag \t)
+      (map #(vector % state) chars)
       nil)))
+
+(defn add-split-transition
+  [curr-state [char state]]
+  (swap! states-tracker conj (symbol state))
+  (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)})))
 
 (defn add-transition
   "adds the transition encoded by trans-line into curr-state
    curr-state has format: {:result :accept/:reject :transitions {}}"
   [curr-state trans-line]
-  (let [[char state :as result] (parse-transition trans-line)]
-    (if (nil? result)
+  (let [split-transitions (parse-transition trans-line)]
+    (if (nil? split-transitions)
       nil
-      (do
-        (swap! states-tracker conj (symbol state))
-        (assoc curr-state :transitions (merge (curr-state :transitions) {char (symbol state)}))))))
+      (reduce add-split-transition curr-state split-transitions))))
 
 (defn add-new-state
   [states curr-state-name curr-state]
